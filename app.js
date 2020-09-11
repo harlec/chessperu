@@ -14,15 +14,16 @@ app = {
     // initialize firebase
     firebase: (function () {
         window.firebase.initializeApp({
-        	apiKey: "AIzaSyASLIpAxRFqU0nCCVvqFp2DxDFUKA44fAg",
-        	authDomain: "anuvs-chessroom-ba1fc.firebaseapp.com",
-        	databaseURL: "https://anuvs-chessroom-ba1fc.firebaseio.com",
-        	storageBucket: "anuvs-chessroom-ba1fc.appspot.com",
+        	apiKey: "AIzaSyDciUpz2q2sEukhH2yHm5DLkE0Euy1yx9E",
+            authDomain: "maracuya-384b3.firebaseapp.com",
+            databaseURL: "https://maracuya-384b3.firebaseio.com",
+        	storageBucket: "maracuya-384b3.appspot.com",
         });
         return window.firebase;
     })(),
     database: window.firebase.database(),
     alphanum: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+
     // app functions
     key: function (length) {
     	var text = '';
@@ -116,21 +117,30 @@ app = {
                 state: 'new',
                 fen: (new Chess()).fen(),
                 messages: 0,
-                spectators: 0
+                spectators: 0,
+                iniciator: 'hugo',
+                second:'',
+                sala:'c-1'
             });
             that.database.ref(id).once('value', function (snapshot) {
                 that.loadGame(id, snapshot.val());
             });
     	});
+        console.log('iniciado por hugo');
     },
     joinGame: function (id, player) {
+        //var second = that.key(5);
         if (this.validateID(id)) {
             var that = this;
             this.database.ref(id).once('value', function (snapshot) {
     			if (snapshot.exists()) {
                     var game = snapshot.val();
-                    if (Block.is.str(player))
+                    if (Block.is.str(player)){
                         that.loadGame(id, game, player);
+                        this.database.ref(id).set({
+                            second: 'second'
+                        });
+                    }
                     else that.loadGame(id, game);
                 }
         	});
@@ -209,6 +219,8 @@ app = {
                 spect: 'null'
             });
             this.database.ref(id + '/state').set('commenced');
+            this.database.ref(id + '/sala').set('p-1');
+            this.database.ref(id + '/second').set('arely1');
             this.state = 'commenced';
             this.updateSpectators();
         } else if (game.state == 'commenced') {
